@@ -23,10 +23,14 @@
 
 ## Coisas a fazer
 
-- [ ] pn i -D typescript @types/node tsx
-- [ ] pn i fastify @fastify/cors zod fastify-type-provider-zod @fastify/swagger @fastify/swagger-ui @fastify/multipart
-- [ ] pn i -D vitest vite-tsconfig-paths dotenv-cli
-- [ ] pn i drizzle-orm
-- [ ] pn i -D drizzle-kit
-- [ ] pn i postgres
+- [X] pn i -D typescript @types/node tsx
+- [X] pn i -D vitest vite-tsconfig-paths dotenv-cli
+- [X] pn i -D drizzle-kit
+- [X] pn i fastify @fastify/cors zod fastify-type-provider-zod @fastify/swagger @fastify/swagger-ui @fastify/multipart
+- [X] pn i drizzle-orm
+- [X] pn i postgres
 - [ ] pn i uuidv7
+
+---
+
+[Task board]([https://](https://app.clickup.com/9013846484/v/b/6-901311956451-2))

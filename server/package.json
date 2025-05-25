@@ -1,15 +1,15 @@
 {
 	"scripts": {
-    "dev": "tsx watch --env-file .env src/infra/http/server.ts",
-    "test": "dotenv -e .env.test -- vitest run",
-    "test:watch": "dotenv -e .env.test -- vitest",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
-    "db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
-    "pretest": "pn run db:migrate:test",
-    "pretest:watch": "pn run db:migrate:test"
-  },
+		"dev": "tsx watch --env-file .env src/infra/http/server.ts",
+		"test": "dotenv -e .env.test -- vitest run",
+		"test:watch": "dotenv -e .env.test -- vitest",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:studio": "drizzle-kit studio",
+		"db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
+		"pretest": "pn run db:migrate:test",
+		"pretest:watch": "pn run db:migrate:test"
+	},
 	"devDependencies": {
 		"@types/node": "^22.15.21",
 		"dotenv-cli": "^8.0.0",
@@ -28,6 +28,7 @@
 		"fastify": "^5.3.3",
 		"fastify-type-provider-zod": "^4.0.2",
 		"postgres": "^3.4.7",
+		"uuidv7": "^1.0.2",
 		"zod": "^3.25.28"
 	}
 }

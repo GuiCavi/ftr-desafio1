@@ -5,6 +5,7 @@ import { storeUrl } from "@/core/store-url";
 import { isError, isSuccess, unwrapEither } from "@/shared/either";
 import { db } from "@/infra/db";
 import { Schemas } from "@/infra/db/schemas";
+import { ErrorCodes, ErrorKeyCodes } from "../errors/error-codes";
 
 const urlManagerRoute: FastifyPluginAsyncZod = async (server) => {
   server.get(
@@ -24,15 +25,10 @@ const urlManagerRoute: FastifyPluginAsyncZod = async (server) => {
             accessCount: z.number().describe("Number of accesses to the shortened URL"),
           })).describe("List of shortened URLs"),
           409: z.object({
-            code: z.string().describe("Error code"),
-            reason: z.string().describe("Reason for the error"),
+            code: z.literal(ErrorCodes.URL_ALREADY_EXISTS).describe("Error code for URL already exists"),
+            reason: z.literal(ErrorKeyCodes.URL_ALREADY_EXISTS).describe("Reason for the error"),
             message: z.string().describe("Error message"),
           }).describe("The shortened URL already exists"),
-          500: z.object({
-            code: z.string().describe("Error code"),
-            reason: z.string().describe("Reason for the error"),
-            message: z.string().describe("Error message"),
-          }).describe("There was a problem on the server side"),
         },
       },
     },

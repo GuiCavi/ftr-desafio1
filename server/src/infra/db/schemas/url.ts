@@ -1,3 +1,4 @@
+import { InferSelectModel } from "drizzle-orm";
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
@@ -8,3 +9,5 @@ export const url = pgTable("url", {
   accessCount: integer("access_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
+
+export type URLTableModel = InferSelectModel<typeof url>;

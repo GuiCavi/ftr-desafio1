@@ -8,6 +8,7 @@ import { hasZodFastifySchemaValidationErrors, jsonSchemaTransform, serializerCom
 import { loadRoutes } from "./routes";
 
 const server = fastify();
+
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);
 
@@ -43,6 +44,10 @@ server.register(fastifySwagger, {
   },
   transform: jsonSchemaTransform,
 });
+
+server.register(require('@scalar/fastify-api-reference'), {
+  routePrefix: '/reference',
+})
 
 server.register(fastifySwaggerUi, {
   routePrefix: "/docs",

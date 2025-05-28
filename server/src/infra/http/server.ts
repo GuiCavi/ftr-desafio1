@@ -3,9 +3,11 @@ import { fastifyCors } from "@fastify/cors";
 import { fastifyMultipart } from "@fastify/multipart";
 import { fastifySwagger } from "@fastify/swagger";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
+import scalarUi from "@scalar/fastify-api-reference";
 import { fastify } from "fastify";
 import { hasZodFastifySchemaValidationErrors, jsonSchemaTransform, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { loadRoutes } from "./routes";
+import { ErrorCodes, ErrorKeyCodes } from "./errors/error-codes";
 
 const server = fastify();
 
@@ -15,6 +17,8 @@ server.setSerializerCompiler(serializerCompiler);
 server.setErrorHandler((error, request, reply) => {
   if (hasZodFastifySchemaValidationErrors(error)) {
     return reply.status(400).send({
+      code: ErrorCodes.BAD_INPUT_FORMAT,
+      reason: ErrorKeyCodes.BAD_INPUT_FORMAT,
       message: "Validation error",
       issues: error.validation.flatMap(issue => ({
         issue: issue.params.issue.code,
@@ -27,6 +31,8 @@ server.setErrorHandler((error, request, reply) => {
   console.error(error);
 
   return reply.status(500).send({
+    code: ErrorCodes.INTERNAL_SERVER_ERROR,
+    reason: ErrorKeyCodes.INTERNAL_SERVER_ERROR,
     message: "Internal server error",
   });
 });
@@ -45,7 +51,7 @@ server.register(fastifySwagger, {
   transform: jsonSchemaTransform,
 });
 
-server.register(require('@scalar/fastify-api-reference'), {
+server.register(scalarUi, {
   routePrefix: '/reference',
 })
 

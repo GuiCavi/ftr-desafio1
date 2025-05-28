@@ -8,6 +8,8 @@
     "module": "ESNext",
     "target": "ESNext",
 
+    "types": ["vitest"],
+
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

@@ -1,0 +1,8 @@
+POST http://localhost:3333/api/url
+content-type: application/json
+accept: application/json
+
+{
+  "url": "https://google.com",
+  "shortUrl": "google"
+}

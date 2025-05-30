@@ -50,4 +50,19 @@ describe("get-url", () => {
 		const error = unwrapEither(sut) as EitherError<UnknownError>["left"];
 		expect(error).toBeInstanceOf(UnknownError);
 	});
+
+	it("should increment when accessing an url", async () => {
+		const randomName = `random-name-${randomUUID()}`;
+		const url = "https://example.com";
+
+		const prevState = await insertUrlRow({
+			url,
+			shortUrl: randomName,
+		});
+
+		const sut = await getUrl({ shortUrl: randomName });
+		expect(isSuccess(sut)).toBe(true);
+		const result = unwrapEither(sut) as Success<URLTableModel>["right"];
+		expect(result.accessCount).toBe(prevState.accessCount + 1);
+	});
 });

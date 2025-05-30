@@ -1,95 +1,114 @@
+import { listUrls } from "@/core/list-urls";
 import { storeUrl } from "@/core/store-url";
-import { db } from "@/infra/db";
-import { Schemas } from "@/infra/db/schemas";
 import { isSuccess, unwrapEither } from "@/shared/either";
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import {
+	ShortUrlValidationSchema,
+	UrlValidationSchema,
+} from "@/shared/validations/url-schema";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { ErrorCodes, ErrorKeyCodes } from "../errors/error-codes";
-import { Route } from "./types/route";
+import type { Route } from "./types/route";
+
+const UrlResponseSchema = z.object({
+	id: z.string().uuid().describe("ID of the shortened URL"),
+	url: UrlValidationSchema.describe("Original URL"),
+	shortUrl: ShortUrlValidationSchema.describe("Shortened URL segment"),
+	createdAt: z.date().describe("Creation date of the shortened URL"),
+	accessCount: z.number().describe("Number of accesses to the shortened URL"),
+});
+
+const errorResponseSchema = (
+	code: ErrorCodes,
+	reason: ErrorKeyCodes,
+	describe: string,
+) =>
+	z
+		.object({
+			code: z.literal(code).describe("The code for the error"),
+			reason: z.literal(reason).describe("A reason for the error"),
+			message: z.string().describe("Error message"),
+		})
+		.describe(describe);
 
 const urlManagerRoute: FastifyPluginAsyncZod = async (server) => {
-  server.get(
-    "/",
-    {
-      schema: {
-        summary: "List all shorten URLs",
-        response: {
-          200: z.array(z.object({
-            id: z.string().uuid().describe("ID of the shortened URL"),
-            url: z.string().url().describe("Original URL"),
-            shortUrl: z.string().min(1).max(100).regex(
-              /^[a-zA-Z0-9\-._]+$/,
-              "Invalid characters in URL segment"
-            ),
-            createdAt: z.date().describe("Creation date of the shortened URL"),
-            accessCount: z.number().describe("Number of accesses to the shortened URL"),
-          })).describe("List of shortened URLs"),
-        },
-      },
-    },
-    async (request, reply) => {
-      const urls = await db
-        .select()
-        .from(Schemas.url);
+	server.get(
+		"/",
+		{
+			schema: {
+				summary: "List all shorten URLs",
+				response: {
+					200: z.array(UrlResponseSchema).describe("List of shortened URLs"),
+					400: errorResponseSchema(
+						ErrorCodes.UNKNOWN_ERROR,
+						ErrorKeyCodes.UNKNOWN_ERROR,
+						"Unknown error",
+					),
+				},
+			},
+		},
+		async (request, reply) => {
+			const result = await listUrls();
 
-      return reply.status(200).send(urls);
-    }
-  ),
-    server.post(
-      "/",
-      {
-        schema: {
-          summary: "Shorten a URL",
-          body: z.object({
-            url: z.string().url(),
-            shortUrl: z.string().min(1).max(100).regex(
-              /^[a-zA-Z0-9\-._]+$/,
-              "Invalid characters in URL segment"
-            )
-          }),
-          response: {
-            201: z.object({
-              id: z.string().uuid().describe("ID of the shortened URL"),
-              url: z.string().url().describe("Original URL"),
-              shortUrl: z.string().min(1).max(100).regex(
-                /^[a-zA-Z0-9\-._]+$/,
-                "Invalid characters in URL segment"
-              ),
-              createdAt: z.date().describe("Creation date of the shortened URL"),
-              accessCount: z.number().describe("Number of accesses to the shortened URL"),
-            }).describe("The URL was created successfully"),
-            409: z.object({
-              code: z.literal(ErrorCodes.URL_ALREADY_EXISTS).describe("Error code for URL already exists"),
-              reason: z.literal(ErrorKeyCodes.URL_ALREADY_EXISTS).describe("Reason for the error"),
-              message: z.string().describe("Error message"),
-            }).describe("The shortened URL already exists"),
-          },
-        },
-      },
-      async (request, reply) => {
-        const { url, shortUrl } = request.body;
+			if (isSuccess(result)) {
+				const urls = unwrapEither(result);
+				return reply.status(200).send(urls);
+			}
 
-        const result = await storeUrl({
-          url,
-          shortUrl,
-        });
+			const error = unwrapEither(result);
+			return reply.status(400).send({
+				code: error.errorCode,
+				reason: error.errorKey,
+				message: error.message,
+			});
+		},
+	);
 
-        if (isSuccess(result)) {
-          const createdUrl = unwrapEither(result);
-          return reply.status(201).send(createdUrl);
-        }
+	server.post(
+		"/",
+		{
+			schema: {
+				summary: "Shorten a URL",
+				body: z.object({
+					url: UrlValidationSchema.describe("The URL to short"),
+					shortUrl: ShortUrlValidationSchema.describe(
+						"The URL pathname to store",
+					),
+				}),
+				response: {
+					201: UrlResponseSchema.describe("The URL was created successfully"),
+					409: errorResponseSchema(
+						ErrorCodes.URL_ALREADY_EXISTS,
+						ErrorKeyCodes.URL_ALREADY_EXISTS,
+						"The shorten URL already exists",
+					),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { url, shortUrl } = request.body;
 
-        const error = unwrapEither(result);
-        
-        return reply.status(409).send({
-          code: error.errorCode,
-          reason: error.errorKey,
-          message: error.message,
-        });
-      });
+			const result = await storeUrl({
+				url,
+				shortUrl,
+			});
+
+			if (isSuccess(result)) {
+				const createdUrl = unwrapEither(result);
+				return reply.status(201).send(createdUrl);
+			}
+
+			const error = unwrapEither(result);
+			return reply.status(409).send({
+				code: error.errorCode,
+				reason: error.errorKey,
+				message: error.message,
+			});
+		},
+	);
 };
 
 export default {
-  resource: "url",
-  handler: urlManagerRoute,
+	resource: "url",
+	handler: urlManagerRoute,
 } as Route;

@@ -3,6 +3,8 @@ export enum ErrorCodes {
 
   BAD_INPUT_FORMAT = "BREV_4000",
   INTERNAL_SERVER_ERROR = "BREV_5000",
+
+  UNKNOWN_ERROR = "BREV_9999",
 }
 
 export enum ErrorKeyCodes {
@@ -10,6 +12,8 @@ export enum ErrorKeyCodes {
 
   BAD_INPUT_FORMAT = "bad_input_format",
   INTERNAL_SERVER_ERROR = "internal_server_error",
+
+  UNKNOWN_ERROR = "unknown_error",
 }
 
 // export type CustomError = {

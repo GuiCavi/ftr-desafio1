@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { db } from "@/infra/db";
-import { Schemas } from "@/infra/db/schemas";
 import type { URLTableModel } from "@/infra/db/schemas/url";
 import { UnknownError } from "@/infra/http/errors/unknown-error";
 import {
@@ -12,13 +11,7 @@ import {
 } from "@/shared/either";
 import { describe, expect, it, vi } from "vitest";
 import { listUrls } from "../list-urls";
-
-async function insertUrlRow(data: { url: string; shortUrl: string }) {
-	await db.insert(Schemas.url).values({
-		url: data.url,
-		shortUrl: data.shortUrl,
-	});
-}
+import { insertUrlRow } from "./helpers/test-helpers";
 
 describe("list-urls", () => {
 	it("should return all URLs from the database", async () => {

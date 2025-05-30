@@ -22,11 +22,11 @@ describe("list-urls", () => {
 		await insertUrlRow(url1);
 		await insertUrlRow(url2);
 
-		const result = await listUrls();
+		const sut = await listUrls();
 
-		expect(isSuccess(result)).toBe(true);
+		expect(isSuccess(sut)).toBe(true);
 
-		const urls = unwrapEither(result) as Success<URLTableModel[]>["right"];
+		const urls = unwrapEither(sut) as Success<URLTableModel[]>["right"];
 		expect(urls).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining(url1),
@@ -40,11 +40,11 @@ describe("list-urls", () => {
 			throw new Error("db error");
 		});
 
-		const result = await listUrls();
+		const sut = await listUrls();
 
-		expect(isError(result)).toBe(true);
+		expect(isError(sut)).toBe(true);
 
-		const error = unwrapEither(result) as EitherError<UnknownError>["left"];
+		const error = unwrapEither(sut) as EitherError<UnknownError>["left"];
 		expect(error).toBeInstanceOf(UnknownError);
 
 		spy.mockRestore();

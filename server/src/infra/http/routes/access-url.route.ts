@@ -61,7 +61,7 @@ const accessUrlRoute: FastifyPluginAsyncZod = async (server) => {
 			}
 
 			const error = unwrapEither(result);
-			return reply.status(400).send({
+			return reply.status(404).send({
 				code: error.errorCode,
 				reason: error.errorKey,
 				message: error.message,

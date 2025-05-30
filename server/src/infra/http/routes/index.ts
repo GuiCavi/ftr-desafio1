@@ -3,33 +3,41 @@ import path from "node:path";
 
 import { BASE_API_PREFIX } from "@/config/const";
 
+import type { FastifyInstance, FastifyRegisterOptions } from "fastify";
 import type { Route } from "./types/route";
-import type { FastifyInstance } from "fastify";
 
 const loadFiles = () => {
-  try {
-    const filesInDir = readdirSync(__dirname)
-      .filter(file => file.includes(".route."));
+	try {
+		const filesInDir = readdirSync(__dirname).filter((file) =>
+			file.includes(".route."),
+		);
 
-    const routesWithContent: Route[] = [];
+		const routesWithContent: Route[] = [];
 
-    for (const file of filesInDir) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const content = require(path.resolve(__dirname, file));
+		for (const file of filesInDir) {
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
+			const content = require(path.resolve(__dirname, file));
 
-      routesWithContent.push(content.default);
-    }
+			routesWithContent.push(content.default);
+		}
 
-    return routesWithContent;
-  } catch (error) {
-    console.log("🚀 ~ loadRoutes ~ loadFiles ~ error:", error);
-  }
+		return routesWithContent;
+	} catch (error) {
+		console.log("🚀 ~ loadRoutes ~ loadFiles ~ error:", error);
+	}
 };
 
 export const loadRoutes = (server: FastifyInstance) => {
-  const routes = loadFiles();
+	const routes = loadFiles();
 
-  routes?.forEach(route => {
-    server.register(route.handler, { prefix: path.join(BASE_API_PREFIX, route.resource) });
-  });
+	if (routes) {
+		for (const route of routes) {
+			const options: Parameters<typeof server.register>[1] = {};
+
+			if (!route.omitPrefix) {
+				options.prefix = path.join(BASE_API_PREFIX, route.resource);
+			}
+			server.register(route.handler, options);
+		}
+	}
 };

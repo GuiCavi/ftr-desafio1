@@ -1,8 +1,10 @@
+import { deleteUrl } from "@/core/delete-url";
 import { listUrls } from "@/core/list-urls";
 import { storeUrl } from "@/core/store-url";
 import { isSuccess, unwrapEither } from "@/shared/either";
 import {
 	ShortUrlValidationSchema,
+	UrlIdSchema,
 	UrlValidationSchema,
 } from "@/shared/validations/url-schema";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -11,7 +13,7 @@ import { ErrorCodes, ErrorKeyCodes } from "../errors/error-codes";
 import type { Route } from "./types/route";
 
 const UrlResponseSchema = z.object({
-	id: z.string().uuid().describe("ID of the shortened URL"),
+	id: UrlIdSchema.describe("ID of the shortened URL"),
 	url: UrlValidationSchema.describe("Original URL"),
 	shortUrl: ShortUrlValidationSchema.describe("Shortened URL segment"),
 	createdAt: z.date().describe("Creation date of the shortened URL"),
@@ -106,9 +108,44 @@ const urlManagerRoute: FastifyPluginAsyncZod = async (server) => {
 			});
 		},
 	);
+
+	server.delete(
+		"/:id",
+		{
+			schema: {
+				summary: "Delete a shortened URL by its ID",
+				params: z.object({
+					id: UrlIdSchema.describe("ID of the shortened URL"),
+				}),
+				response: {
+					200: z.string().describe("URL deleted successfully"),
+					404: errorResponseSchema(
+						ErrorCodes.URL_NOT_FOUND,
+						ErrorKeyCodes.URL_NOT_FOUND,
+						"The URL was not found",
+					),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id } = request.params;
+			const result = await deleteUrl({ id });
+
+			if (isSuccess(result)) {
+				return reply.status(200).send("OK");
+			}
+
+			const error = unwrapEither(result);
+			return reply.status(404).send({
+				code: error.errorCode,
+				reason: error.errorKey,
+				message: error.message,
+			});
+		},
+	);
 };
 
 export default {
-	resource: "url",
+	resource: "urls",
 	handler: urlManagerRoute,
 } as Route;

@@ -10,6 +10,7 @@ import {
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { ErrorCodes, ErrorKeyCodes } from "../errors/error-codes";
+import { errorResponseSchema } from "./helpers/error-response-schema";
 import type { Route } from "./types/route";
 
 const UrlResponseSchema = z.object({
@@ -19,19 +20,6 @@ const UrlResponseSchema = z.object({
 	createdAt: z.date().describe("Creation date of the shortened URL"),
 	accessCount: z.number().describe("Number of accesses to the shortened URL"),
 });
-
-const errorResponseSchema = (
-	code: ErrorCodes,
-	reason: ErrorKeyCodes,
-	describe: string,
-) =>
-	z
-		.object({
-			code: z.literal(code).describe("The code for the error"),
-			reason: z.literal(reason).describe("A reason for the error"),
-			message: z.string().describe("Error message"),
-		})
-		.describe(describe);
 
 const urlManagerRoute: FastifyPluginAsyncZod = async (server) => {
 	server.get(

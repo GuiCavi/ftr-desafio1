@@ -45,6 +45,11 @@ const accessUrlRoute: FastifyPluginAsyncZod = async (server) => {
 			},
 		},
 		async (request, reply) => {
+			const isPrefetch = request.headers.purpose === "prefetch";
+			if (isPrefetch) {
+				return reply.status(204).send();
+			}
+
 			const { shortUrl } = request.params;
 			const result = await getUrl({ shortUrl });
 

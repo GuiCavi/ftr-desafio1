@@ -5,7 +5,7 @@ import { UnknownError } from "@/infra/http/errors/unknown-error";
 import { URLNotFoundError } from "@/infra/http/errors/url-not-found";
 import { type Either, makeError, makeSuccess } from "@/shared/either";
 import { ShortUrlValidationSchema } from "@/shared/validations/url-schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 const GetUrlParams = z.object({
@@ -21,9 +21,12 @@ export async function getUrl(
 		const { shortUrl } = GetUrlParams.parse(params);
 
 		const response = await db
-			.select()
-			.from(Schemas.url)
-			.where(eq(Schemas.url.shortUrl, shortUrl));
+			.update(Schemas.url)
+			.set({
+				accessCount: sql`${Schemas.url.accessCount} + 1`,
+			})
+			.where(eq(Schemas.url.shortUrl, shortUrl))
+			.returning();
 
 		if (response.length) {
 			return makeSuccess(response[0]);

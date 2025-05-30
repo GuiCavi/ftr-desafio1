@@ -21,7 +21,6 @@ server.setSerializerCompiler(serializerCompiler);
 
 server.setErrorHandler((error, request, reply) => {
 	if (hasZodFastifySchemaValidationErrors(error)) {
-		console.log("🚀 ~ server.setErrorHandler ~ error:", error);
 		return reply.status(400).send({
 			code: ErrorCodes.BAD_INPUT_FORMAT,
 			reason: ErrorKeyCodes.BAD_INPUT_FORMAT,

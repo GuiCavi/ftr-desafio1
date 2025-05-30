@@ -46,12 +46,11 @@ const accessUrlRoute: FastifyPluginAsyncZod = async (server) => {
 		},
 		async (request, reply) => {
 			const { shortUrl } = request.params;
-			console.log("🚀 ~ shortUrl:", shortUrl);
 			const result = await getUrl({ shortUrl });
 
 			if (isSuccess(result)) {
 				const url = unwrapEither(result);
-				console.log("🚀 ~ result:", url.url);
+
 				return reply
 					.status(303)
 					.header("Cache-Control", "no-store")

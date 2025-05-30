@@ -15,7 +15,6 @@ const loadFiles = () => {
 		const routesWithContent: Route[] = [];
 
 		for (const file of filesInDir) {
-			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			const content = require(path.resolve(__dirname, file));
 
 			routesWithContent.push(content.default);

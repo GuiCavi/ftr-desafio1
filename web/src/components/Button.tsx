@@ -2,7 +2,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { CustomIcon, type IconProps } from "./shared/CustomIcon";
 
 const button = cva(
-	"rounded-lg font-semibold border-[1px] border-transparent px-5",
+	"flex items-center gap-1.5 rounded-lg font-semibold border-[1px] border-transparent px-5",
 	{
 		variants: {
 			variant: {
@@ -17,6 +17,9 @@ const button = cva(
 			full: {
 				false: null,
 				true: "w-full",
+			},
+			size: {
+				small: "h-8! p-2!",
 			},
 		},
 		compoundVariants: [
@@ -56,6 +59,7 @@ function Button({
 	className,
 	variant,
 	disabled,
+	size,
 	full,
 	...props
 }: ButtonProps) {
@@ -63,7 +67,7 @@ function Button({
 		<button
 			disabled={disabled ?? false}
 			{...props}
-			className={button({ variant, disabled, className, full })}
+			className={button({ variant, disabled, className, full, size })}
 		>
 			{children}
 		</button>

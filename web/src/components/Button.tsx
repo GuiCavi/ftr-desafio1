@@ -2,7 +2,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { CustomIcon, type IconProps } from "./shared/CustomIcon";
 
 const button = cva(
-	"flex items-center gap-1.5 rounded-lg font-semibold border-[1px] border-transparent px-5",
+	"flex justify-center items-center gap-1.5 rounded-lg font-semibold border-[1px] border-transparent px-5",
 	{
 		variants: {
 			variant: {

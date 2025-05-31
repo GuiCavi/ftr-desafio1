@@ -6,7 +6,7 @@ const card = cva(
 );
 
 export interface CardContainerProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "disabled">,
+	extends Pick<React.HTMLAttributes<HTMLDivElement>, "className" | "children">,
 		VariantProps<typeof card> {}
 
 function Container({ className, children }: CardContainerProps) {

@@ -40,7 +40,7 @@ const button = cva(
 			},
 			{
 				variant: "icon",
-				className: "px-0! size-8!",
+				className: "px-0! size-8! rounded-sm!",
 			},
 		],
 		defaultVariants: {

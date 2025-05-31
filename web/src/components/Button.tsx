@@ -1,7 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { CustomIcon, type IconProps } from "./shared/CustomIcon";
 
-export const button = cva(
+const button = cva(
 	"rounded-lg font-semibold border-[1px] border-transparent px-5",
 	{
 		variants: {

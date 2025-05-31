@@ -16,7 +16,11 @@ function Container({ className, children }: CardContainerProps) {
 type CardHeaderProps = PropsWithChildren;
 
 function Header({ children }: CardHeaderProps) {
-	return <header className="text-lg font-bold">{children}</header>;
+	return (
+		<header className="w-full text-lg font-bold flex items-center justify-between">
+			{children}
+		</header>
+	);
 }
 
 export default { Container, Header };

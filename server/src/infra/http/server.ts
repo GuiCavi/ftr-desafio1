@@ -67,7 +67,7 @@ server.register(fastifySwaggerUi, {
 	routePrefix: "/docs",
 });
 
-loadRoutes(server);
+await loadRoutes(server);
 
 const port = env.PORT || 3333;
 const host = "0.0.0.0";

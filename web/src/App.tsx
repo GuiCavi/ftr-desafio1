@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Button } from "./components/Button";
 import { ListLinks } from "./components/ListLinks";
 import { LoadingLinks } from "./components/LoadingLinks";
@@ -11,11 +12,19 @@ export function App() {
 	const { addLink, getLinks } = useLinks();
 	const { isLoading } = useQuery({
 		queryKey: ["links"],
-		queryFn: () => getLinks(),
+		queryFn: () => {
+			getLinks();
+			return true;
+		},
 	});
 
 	const handleSaveShortUrl = (formData: FormData) => {
 		const shortLink = Object.fromEntries(formData.entries()) as InputLink;
+
+		if (shortLink.url.length === 0 || shortLink.shortUrl.length === 0) {
+			toast.error("Preencha os campos necessários");
+			return;
+		}
 
 		addLink(shortLink);
 	};

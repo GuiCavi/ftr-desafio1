@@ -43,6 +43,25 @@ export const useLinks = create<LinksState, [["zustand/immer", never]]>(
 							description: "Essa URL encurtada já está presente",
 						});
 					}
+					if (error?.response?.status === 400) {
+						type ReturnError = {
+							issue: string;
+							message: string;
+							param: string;
+						};
+						const errorIssues = error.response.data.issues as ReturnError[];
+
+						const errorString = errorIssues.reduce((prev, curr) => {
+							if (curr.param === "url") prev.add("Link original");
+							if (curr.param === "shortUrl") prev.add("Link encurtado");
+
+							return prev;
+						}, new Set());
+
+						toast.error("Erro de validação", {
+							description: `Parâmetros com algum problema: ${Array.from(errorString.values()).join(", ")}`,
+						});
+					}
 				} else {
 					toast.error("Erro desconhecido", {
 						description: "Tente novamente mais tarde",

@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "./components/Button";
 import { ListLinks } from "./components/ListLinks";
 import { LoadingLinks } from "./components/LoadingLinks";
+import { NewLinkForm } from "./components/forms/NewLinkForm";
 import { LogoIcon } from "./components/shared/LogoIcon";
 import Card from "./components/ui/Card";
-import { Input } from "./components/ui/Input";
 import { type InputLink, useLinks } from "./store/links";
 
 export function App() {
@@ -28,25 +28,7 @@ export function App() {
 			<main className="flex flex-col gap-5 md:flex-row">
 				<Card.Container className="md:max-w-[380px]">
 					<Card.Header>Novo link</Card.Header>
-
-					<form
-						action={handleSaveShortUrl}
-						className="w-full flex flex-col gap-6"
-					>
-						<div className="flex flex-col gap-4">
-							<Input.Container>
-								<Input.Label htmlFor="url">Link original</Input.Label>
-								<Input type="url" name="url" placeholder="www.exemplo.com.br" />
-							</Input.Container>
-
-							<Input.Container>
-								<Input.Label htmlFor="shortUrl">Link encurtado</Input.Label>
-								<Input type="text" name="shortUrl" placeholder="brev.ly/" />
-							</Input.Container>
-						</div>
-
-						<Button full>Salvar link</Button>
-					</form>
+					<NewLinkForm onSubmit={handleSaveShortUrl} />
 				</Card.Container>
 
 				<Card.Container className="md:max-w-[580px] overflow-hidden relative">
